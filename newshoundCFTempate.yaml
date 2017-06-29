@@ -304,6 +304,9 @@ Resources:
         S3Key: whatshot.zip
       Timeout: 10
       Runtime: python2.7
+      Environment:
+        Variables:
+          news_items_tablename: '!Ref NewsItemsTable'
     DependsOn: CreateZipFiles
   DeleteTempBucket:
     Type: Custom::LambdaCallout
@@ -344,8 +347,6 @@ Resources:
       Integration:
         Type: AWS
         IntegrationHttpMethod: POST
-        RequestParameters:
-          integration.request.querystring.news_items_tablename: '!Ref NewsItemsTable'
         # The API version here (the date) is crucial
         Uri: !Join [ "", ['arn:aws:apigateway:',!Ref 'AWS::Region',':lambda:path/','2015-03-31','/functions/',!GetAtt WhatshotFunction.Arn,'/invocations']]
         IntegrationResponses:
