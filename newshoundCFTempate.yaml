@@ -3,7 +3,7 @@ Description: Infrastructure Continuous Delivery for newshound
 Outputs:
   WhatsHotUrl:
     Description: The url to post queries to the whatshot api
-    Value: !Join ['', [ 'https://', !Ref WhatsHotApi, '.execute-api.', !Ref 'AWS::Region', '.amazonaws.com/FirstDeployment/whatshot']]
+    Value: !Join ['', [ 'https://', !Ref WhatsHotApi, '.execute-api.', !Ref 'AWS::Region', '.amazonaws.com/v1/whatshot']]
 Parameters: 
   NewsApiKey: 
     Type: String
@@ -41,17 +41,15 @@ Resources:
     Type: "AWS::DynamoDB::Table"
     Properties:
       AttributeDefinitions:
-      - 
-        AttributeName: url
+      - AttributeName: url
         AttributeType: S
-        AttributeName: country
+      - AttributeName: country
         AttributeType: S		
       KeySchema:
-      -
-        AttributeName: url
+      - AttributeName: url
         KeyType: HASH
-        AttributeName: country
-        KeyType: HASH
+      - AttributeName: country
+        KeyType: RANGE
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
@@ -59,17 +57,15 @@ Resources:
     Type: "AWS::DynamoDB::Table"
     Properties:
       AttributeDefinitions:
-      - 
-        AttributeName: newsitem
+      - AttributeName: newsitem
         AttributeType: S
-        AttributeName: url
+      - AttributeName: url
         AttributeType: S		
       KeySchema:
-      -
-        AttributeName: newsitem
+      - AttributeName: newsitem
         KeyType: HASH
-        AttributeName: url
-        KeyType: HASH
+      - AttributeName: url
+        KeyType: RANGE
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
@@ -284,7 +280,7 @@ Resources:
     Properties:
       Description: Scrapes the newsapi for stuff in the news and populates a database with the info returned
       MemorySize: 512
-      Handler: index.handler
+      Handler: newshound.handler
       Role: !GetAtt LambdaExecutionRole.Arn
       Code:
         S3Bucket: !GetAtt CreateZipFiles.bucket_name
@@ -296,7 +292,7 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       Description: Reports on data collected by newshound
-      MemorySize: 512
+      MemorySize: 128
       Handler: whatshot.handler
       Role: !GetAtt LambdaExecutionRole.Arn
       Code:
@@ -322,7 +318,7 @@ Resources:
     DependsOn: NewshoundFunction
     Properties: 
       Description: "Scheduled rule to trigger the newshound function"
-      ScheduleExpression: "rate(1 hour)"
+      ScheduleExpression: "rate(5 minutes)"
       Targets:
       - Arn: !GetAtt NewshoundFunction.Arn
         Id: !Ref NewshoundFunction
