@@ -117,8 +117,8 @@ Resources:
             if event['RequestType'] == 'Create':
               os.chdir('/tmp')
               #  Download newshound.py and whatshot.py to pwd from github
-              dlfile('https://raw.github.com/jherbage/newshound-application/newshound.py')
-              dlfile('https://raw.github.com/jherbage/newshound-application/whatshot.py')
+              dlfile('https://raw.github.com/jherbage/newshound-application/master/newshound.py')
+              dlfile('https://raw.github.com/jherbage/newshound-application/master/whatshot.py')
               # Zip the function lib contents and encode them ready to upload
               if not os.path.exists('lambda-function'):
                 os.makedirs('lambda-function')
@@ -146,7 +146,7 @@ Resources:
               os.chdir('..')
             
               # Get the extra python stuff for zip from githuh
-              dlfile('https://raw.github.com/jherbage/newshound-application/newshound-pylibs.tar.gz')
+              dlfile('https://raw.github.com/jherbage/newshound-application/master/newshound-pylibs.tar.gz')
               tar = tarfile.open("newshound-pylibs.tar.gz")
               os.chdir('lambda-function')
               tar.extractall()
@@ -344,6 +344,8 @@ Resources:
       Integration:
         Type: AWS
         IntegrationHttpMethod: POST
+        RequestParameters:
+          integration.request.querystring.news_items_tablename: !Ref NewsItemsTable
         # The API version here (the date) is crucial
         Uri: !Join [ "", ['arn:aws:apigateway:',!Ref 'AWS::Region',':lambda:path/','2015-03-31','/functions/',!GetAtt WhatshotFunction.Arn,'/invocations']]
         IntegrationResponses:
