@@ -318,7 +318,7 @@ Resources:
     DependsOn: NewshoundFunction
     Properties: 
       Description: "Scheduled rule to trigger the newshound function"
-      ScheduleExpression: "rate(5 minutes)"
+      ScheduleExpression: "rate(1 hour)"
       Targets:
       - Arn: !GetAtt NewshoundFunction.Arn
         Id: !Ref NewshoundFunction
