@@ -306,7 +306,7 @@ Resources:
       Runtime: python2.7
       Environment:
         Variables:
-          news_items_tablename: '!Ref NewsItemsTable'
+          news_items_tablename: !Ref NewsItemsTable
     DependsOn: CreateZipFiles
   DeleteTempBucket:
     Type: Custom::LambdaCallout
